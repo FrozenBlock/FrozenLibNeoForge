@@ -17,12 +17,8 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 
-@Mod(FrozenMain.MOD_ID)
+@Mod(FrozenSharedConstants.MOD_ID)
 public class FrozenMain {
-
-    public static final String MOD_ID = "frozenlib";
-
-    private static final Logger LOGGER = LogUtils.getLogger();
 
     public FrozenMain(IEventBus modEventBus, ModContainer modContainer) {
 
@@ -39,12 +35,14 @@ public class FrozenMain {
 
     @SubscribeEvent
     public void onServerStarting(ServerStartingEvent event) {
+        FrozenServer.onInitializeServer(event);
     }
 
-    @EventBusSubscriber(modid = MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
+    @EventBusSubscriber(modid = FrozenSharedConstants.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.CLIENT)
     public static class ClientModEvents {
         @SubscribeEvent
         public static void onClientSetup(FMLClientSetupEvent event) {
+            FrozenClient.onInitializeClient(event);
         }
     }
 }
