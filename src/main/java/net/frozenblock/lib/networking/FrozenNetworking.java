@@ -149,6 +149,7 @@ public final class FrozenNetworking {
             ClientLevel level = Minecraft.getInstance().level;
             ScreenShaker.addShake(level, intensity, duration, fallOffStart, pos, maxDistance, ticks);
         });
+
         registry.playToClient(EntityScreenShakePacket.PACKET_TYPE, EntityScreenShakePacket.CODEC, (packet, ctx) -> {
             int id = packet.entityId();
             float intensity = packet.intensity();
