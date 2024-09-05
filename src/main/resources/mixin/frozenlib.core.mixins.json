@@ -12,6 +12,5 @@
     "WardenSpawnTrackerCommandMixin"
   ],
   "client": [
-    "client.NoExperimentalMixin"
   ]
 }

@@ -45,7 +45,7 @@ public record EntityTextureOverride<T extends LivingEntity>(EntityType<T> type, 
     }
 
     public static <T extends LivingEntity> EntityTextureOverride<T> register(ResourceLocation key, EntityType<T> type, ResourceLocation texture, Condition<T> condition) {
-        return Registry.register(FrozenClientRegistry.ENTITY_TEXTURE_OVERRIDES, key, new EntityTextureOverride<>(type, texture, condition));
+        return Registry.register(FrozenClientRegistry.ENTITY_TEXTURE_OVERRIDE, key, new EntityTextureOverride<>(type, texture, condition));
     }
 
 

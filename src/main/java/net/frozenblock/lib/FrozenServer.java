@@ -16,6 +16,7 @@
  */
 package net.frozenblock.lib;
 
+import net.frozenblock.lib.integration.api.ModIntegrations;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -23,9 +24,11 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStartingEvent;
 
 @OnlyIn(Dist.DEDICATED_SERVER)
+@EventBusSubscriber(modid = FrozenSharedConstants.MOD_ID, bus = EventBusSubscriber.Bus.MOD, value = Dist.DEDICATED_SERVER)
 public class FrozenServer {
 
+    @SubscribeEvent
     public static void onInitializeServer(ServerStartingEvent event) {
-        //ModIntegrations.initializePreFreeze(); // Mod integrations must run after normal mod initialization
+        ModIntegrations.initializePreFreeze(); // Mod integrations must run after normal mod initialization
     }
 }

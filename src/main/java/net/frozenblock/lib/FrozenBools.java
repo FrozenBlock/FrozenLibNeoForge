@@ -1,6 +1,8 @@
 package net.frozenblock.lib;
 
 import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.LoadingModList;
+import net.neoforged.neoforgespi.language.IModInfo;
 
 public class FrozenBools {
 
@@ -22,6 +24,15 @@ public class FrozenBools {
     public static final boolean HAS_TERRALITH = hasMod("terralith");
 
     public static boolean hasMod(String id) {
-        return ModList.get().getModFileById(id) != null;
+        if(ModList.get() == null) {
+            for(IModInfo info : LoadingModList.get().getMods()) {
+                if (info.getModId().equals(id)) return true;
+            }
+        } else {
+            for (IModInfo info : ModList.get().getMods()) {
+                if (info.getModId().equals(id)) return true;
+            }
+        }
+        return false;
     }
 }

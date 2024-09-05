@@ -4,12 +4,17 @@
   "package": "net.frozenblock.lib.event.mixin",
   "compatibilityLevel": "JAVA_21",
   "injectors": {
-	"defaultRequire": 1
+    "defaultRequire": 1
   },
   "mixins": [
     "BuiltInRegistriesMixin",
     "MappedRegistryMixin",
     "PlayerListMixin",
     "ServerLevelMixin"
+  ],
+  "client": [
+    "ConnectionMixin",
+    "ClientLevelMixin",
+    "MinecraftMixin"
   ]
 }

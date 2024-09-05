@@ -17,7 +17,12 @@ version = mod_version
 group = mod_group_id
 
 repositories {
+    maven {
+        setUrl("https://maven.shedaniel.me/")
+    }
+    maven { url = 'https://maven.minecraftforge.net/' }
     mavenLocal()
+    mavenCentral()
 }
 
 base {
@@ -37,7 +42,7 @@ neoForge {
     }
 
     // This line is optional. Access Transformers are automatically detected
-    // accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
+    accessTransformers = project.files('src/main/resources/META-INF/accesstransformer.cfg')
 
     // Default run configurations.
     // These can be tweaked, removed, or duplicated as needed.
@@ -133,6 +138,16 @@ dependencies {
     // For more info:
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
+    compileOnly(annotationProcessor("org.projectlombok:lombok:1.18.30"))
+    implementation(additionalRuntimeClasspath("blue.endless:jankson:$jankson_version"))
+    implementation("com.moandjiezana.toml:toml4j:$toml4j_version")
+    implementation("org.exjson:xjs-data:$xjs_data_version")
+    implementation("org.exjson:xjs-compat:$xjs_compat_version")
+    implementation("com.personthecat:fresult:$fresult_version")
+    implementation("me.shedaniel.cloth:cloth-config-neoforge:${cloth_config_version}")
+
+    //implementation("com.github.glitchfiend:TerraBlender-neoforge:${terrablender_version}")
+
 }
 
 // This block of code expands all declared replace properties in the specified resource targets.

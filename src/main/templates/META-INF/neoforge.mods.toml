@@ -47,8 +47,63 @@ authors="${mod_authors}" #optional
 description='''${mod_description}'''
 
 # The [[mixins]] block allows you to declare your mixin config to FML so that it gets loaded.
+
 [[mixins]]
-config="${mod_id}.mixins.json"
+config="mixin/${mod_id}.advancement.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.block.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.clothconfig.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.core.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.entity.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.event.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.feature_flag.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.gravity.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.item.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.jankson.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.menu.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.mobcategory.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.recipe.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.screenshake.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.sound.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.spotting_icons.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.storage.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.tag.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.weather.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.wind.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.worldgen.biome.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.worldgen.heightmap.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.worldgen.structure.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.worldgen.surface.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}.worldgen.vein.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}_quiltmc_datafixerupper.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}_quiltmc_registry.mixins.json"
+[[mixins]]
+config="mixin/${mod_id}_quiltmc_resource_loader.mixins.json"
 
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg

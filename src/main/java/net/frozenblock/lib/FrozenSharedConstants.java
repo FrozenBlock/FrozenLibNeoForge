@@ -17,6 +17,7 @@
 
 package net.frozenblock.lib;
 
+import net.frozenblock.lib.entrypoint.api.DevelopmentCheck;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.ModList;
 import org.apache.logging.log4j.util.InternalApi;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.NOPLogger;
 
 @InternalApi
-public class FrozenSharedConstants {
+public class FrozenSharedConstants implements DevelopmentCheck {
     public static final String PROJECT_ID = "FrozenLib";
     public static final String MOD_ID = "frozenlib";
     public static final Logger LOGGER = LoggerFactory.getLogger(PROJECT_ID);
@@ -37,11 +38,12 @@ public class FrozenSharedConstants {
      * <p>
      * It's smart to use this for at least registries.
      */
-    public static boolean UNSTABLE_LOGGING = !ModList.get().getModFileById(MOD_ID).getFile().getFilePath().endsWith(".jar");
+    public static boolean UNSTABLE_LOGGING = DevelopmentCheck.isDevelopment();
     public static final int DATA_VERSION = 2;
 
     @Contract("_ -> new")
     @NotNull
+
     public static ResourceLocation id(String path) {
         return ResourceLocation.fromNamespaceAndPath(FrozenSharedConstants.MOD_ID, path);
     }
