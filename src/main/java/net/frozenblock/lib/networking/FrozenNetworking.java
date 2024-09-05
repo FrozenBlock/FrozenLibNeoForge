@@ -8,6 +8,7 @@ import net.frozenblock.lib.item.impl.network.ForcedCooldownPacket;
 import net.frozenblock.lib.screenshake.api.client.ScreenShaker;
 import net.frozenblock.lib.screenshake.impl.network.EntityScreenShakePacket;
 import net.frozenblock.lib.screenshake.impl.network.RemoveEntityScreenShakePacket;
+import net.frozenblock.lib.screenshake.impl.network.RemoveScreenShakePacket;
 import net.frozenblock.lib.screenshake.impl.network.ScreenShakePacket;
 import net.frozenblock.lib.sound.api.instances.RestrictedMovingSound;
 import net.frozenblock.lib.sound.api.instances.RestrictedMovingSoundLoop;
@@ -161,6 +162,11 @@ public final class FrozenNetworking {
             if (entity != null) {
                 ScreenShaker.addShake(entity, intensity, duration, fallOffStart, maxDistance, ticks);
             }
+        });
+        registry.playToClient(RemoveScreenShakePacket.PACKET_TYPE, RemoveScreenShakePacket.CODEC, (packet, ctx) -> {
+            ScreenShaker.SCREEN_SHAKES.removeIf(
+                    clientScreenShake -> !(clientScreenShake instanceof ScreenShaker.ClientEntityScreenShake)
+            );
         });
         registry.playToClient(RemoveEntityScreenShakePacket.PACKET_TYPE, RemoveEntityScreenShakePacket.CODEC, (packet, ctx) -> {
             int id = packet.entityId();
