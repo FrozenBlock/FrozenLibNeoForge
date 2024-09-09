@@ -20,20 +20,22 @@ import net.frozenblock.lib.entrypoint.api.FrozenClientEntrypoint;
 import net.frozenblock.lib.event.api.ClientEvent;
 import net.frozenblock.lib.integration.api.ModIntegrations;
 import net.frozenblock.lib.menu.api.Panoramas;
-import net.frozenblock.lib.networking.FrozenClientNetworking;
+import net.frozenblock.lib.particle.api.FrozenParticleTypes;
+import net.frozenblock.lib.particle.impl.DebugPosParticle;
 import net.frozenblock.lib.screenshake.api.client.ScreenShaker;
 import net.frozenblock.lib.sound.api.FlyBySoundHub;
 import net.frozenblock.lib.sound.impl.block_sound_group.BlockSoundGroupManager;
 import net.frozenblock.lib.wind.api.ClientWindManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.server.packs.resources.ReloadableResourceManager;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import org.quiltmc.qsl.frozenblock.core.registry.impl.sync.client.ClientRegistrySync;
 import org.quiltmc.qsl.frozenblock.misc.datafixerupper.impl.QuiltDataFixesInternals;
@@ -45,21 +47,14 @@ public class FrozenClient {
     @SubscribeEvent
     public static void onInitializeClient(FMLClientSetupEvent event) {
         ModIntegrations.initializePreFreeze(); // Mod integrations must run after normal mod initialization
-
-        // QUILT INIT
-        ClientRegistrySync.registerHandlers();
-
-        // CONTINUE FROZENLIB INIT
-
-        // PARTICLES TODO: ADD PARTICLE FACTORY!
-        //ParticleFactoryRegistry particleRegistry = ParticleFactoryRegistry.getInstance();
-
-        //particleRegistry.register(FrozenParticleTypes.DEBUG_POS, DebugPosParticle.Provider::new);
-
         Panoramas.addPanorama(ResourceLocation.withDefaultNamespace("textures/gui/title/background/panorama"));
-
         NeoForge.EVENT_BUS.post(new FrozenClientEntrypoint());
 
+    }
+
+    @SubscribeEvent
+    public static void registerParticles(RegisterParticleProvidersEvent event) {
+        event.registerSpriteSet(FrozenParticleTypes.DEBUG_POS, DebugPosParticle.Provider::new);
     }
 
     @SubscribeEvent

@@ -1,5 +1,6 @@
 package net.frozenblock.lib;
 
+import net.frozenblock.lib.config.frozenlib_config.gui.FrozenLibConfigGui;
 import net.frozenblock.lib.core.impl.DataPackReloadMarker;
 import net.frozenblock.lib.debug.client.impl.DebugRenderManager;
 import net.frozenblock.lib.entrypoint.api.FrozenMainEntrypoint;
@@ -21,12 +22,11 @@ import net.frozenblock.lib.worldgen.surface.impl.BiomeTagConditionSource;
 import net.frozenblock.lib.worldgen.surface.impl.OptimizedBiomeTagConditionSource;
 import net.minecraft.commands.synchronization.ArgumentTypeInfos;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
-import net.neoforged.fml.loading.FMLEnvironment;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.quiltmc.qsl.frozenblock.core.registry.api.sync.ModProtocol;
@@ -60,6 +60,9 @@ public class FrozenMain extends FrozenModInitializer {
         NeoForge.EVENT_BUS.register(GravityAPI.class);
         eventBus.register(FrozenRegistry.class);
         NeoForge.EVENT_BUS.register(DebugRenderManager.class);
+
+        //Add the config screen
+        container.registerExtensionPoint(IConfigScreenFactory.class, new FrozenLibConfigGui());
     }
 
     @SubscribeEvent

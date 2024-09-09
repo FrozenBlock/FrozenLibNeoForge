@@ -26,15 +26,12 @@ import net.frozenblock.lib.config.api.instance.ConfigModification;
 import net.frozenblock.lib.config.api.sync.annotation.EntrySyncData;
 import net.frozenblock.lib.config.clothconfig.impl.DisableableWidgetInterface;
 import net.frozenblock.lib.config.impl.network.ConfigSyncModification;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 
 import java.lang.reflect.Field;
 
-@OnlyIn(Dist.CLIENT)
 @Mixin(DynamicEntryListWidget.Entry.class)
 public abstract class DynamicEntryListWidgetEntryMixin implements DisableableWidget, DisableableWidgetInterface {
 

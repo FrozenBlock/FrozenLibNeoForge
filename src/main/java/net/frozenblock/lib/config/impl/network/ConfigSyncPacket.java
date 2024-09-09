@@ -157,6 +157,8 @@ public record ConfigSyncPacket<T>(
 
 	@OnlyIn(Dist.CLIENT)
 	public static <T> void trySendC2S(Config<T> config) {
+		if(Minecraft.getInstance() == null)
+			FrozenSharedConstants.LOGGER.warn("Packet ConfigSyncPacket was sent during minecraft booting");
 		if(hasPermissionsToSendSync(Minecraft.getInstance().player, false))
 			sendC2S(List.of(config));
 	}

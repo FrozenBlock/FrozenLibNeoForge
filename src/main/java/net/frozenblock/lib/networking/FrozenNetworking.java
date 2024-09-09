@@ -52,6 +52,7 @@ import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.handling.DirectionalPayloadHandler;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import org.quiltmc.qsl.frozenblock.core.registry.impl.sync.client.ClientRegistrySync;
 
 import java.util.Optional;
 
@@ -269,6 +270,8 @@ public final class FrozenNetworking {
         registry.playToClient(WindAccessPacket.PACKET_TYPE, WindAccessPacket.STREAM_CODEC, (packet, ctx) -> {
            ClientWindManager.addAccessedPosition(packet.accessPos());
         });
+        ClientRegistrySync.registerHandlers(registry);
+
     }
 
     public static boolean isLocalPlayer(Player player) {

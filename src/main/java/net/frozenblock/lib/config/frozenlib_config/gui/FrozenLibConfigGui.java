@@ -20,18 +20,23 @@ package net.frozenblock.lib.config.frozenlib_config.gui;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
+import me.shedaniel.clothconfig2.gui.entries.BooleanListEntry;
+import me.shedaniel.clothconfig2.impl.builders.BooleanToggleBuilder;
 import net.frozenblock.lib.FrozenSharedConstants;
 import net.frozenblock.lib.config.api.instance.Config;
 import net.frozenblock.lib.config.clothconfig.FrozenClothConfig;
 import net.frozenblock.lib.config.frozenlib_config.FrozenLibConfig;
+import net.frozenblock.lib.entrypoint.api.DevelopmentCheck;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import org.jetbrains.annotations.NotNull;
 
 @OnlyIn(Dist.CLIENT)
-public final class FrozenLibConfigGui {
+public final class FrozenLibConfigGui implements IConfigScreenFactory {
 
 	private static void setupEntries(@NotNull ConfigCategory category, @NotNull ConfigEntryBuilder entryBuilder) {
 		var config = FrozenLibConfig.get(true);
@@ -41,13 +46,29 @@ public final class FrozenLibConfigGui {
 		var dataFixer = config.dataFixer;
 		category.setBackground(FrozenSharedConstants.id("config.png"));
 
+		if (DevelopmentCheck.isDevelopment()) {
+			var isDebug = category.addEntry(
+					FrozenClothConfig.syncedEntry(
+							entryBuilder.startBooleanToggle(text("is_debug"), modifiedConfig.isDebug)
+									.setDefaultValue(defaultConfig.isDebug)
+									.setSaveConsumer(newValue -> config.isDebug = newValue)
+									.setTooltip(tooltip("is_debug"))
+									.build(),
+							config.getClass(),
+							"isDebug",
+							configInstance
+					)
+			);
+		}
+
+		var built = entryBuilder.startBooleanToggle(text("use_wind_on_non_frozenlib_servers"), modifiedConfig.useWindOnNonFrozenServers)
+				.setDefaultValue(defaultConfig.useWindOnNonFrozenServers)
+				.setSaveConsumer(newValue -> config.useWindOnNonFrozenServers = newValue)
+				.setTooltip(tooltip("use_wind_on_non_frozenlib_servers"))
+				.build();
 		var useWindOnNonFrozenServers = category.addEntry(
 			FrozenClothConfig.syncedEntry(
-				entryBuilder.startBooleanToggle(text("use_wind_on_non_frozenlib_servers"), modifiedConfig.useWindOnNonFrozenServers)
-					.setDefaultValue(defaultConfig.useWindOnNonFrozenServers)
-					.setSaveConsumer(newValue -> config.useWindOnNonFrozenServers = newValue)
-					.setTooltip(tooltip("use_wind_on_non_frozenlib_servers"))
-					.build(),
+					built,
 					config.getClass(),
 					"useWindOnNonFrozenServers",
 					configInstance
@@ -112,7 +133,8 @@ public final class FrozenLibConfigGui {
 		);
 	}
 
-	public static Screen buildScreen(Screen parent) {
+	@Override
+	public @NotNull Screen createScreen(@NotNull ModContainer container, @NotNull Screen parent) {
 		var configBuilder = ConfigBuilder.create().setParentScreen(parent).setTitle(text("component.title"));
 		configBuilder.setSavingRunnable(FrozenLibConfig.INSTANCE::save);
 		var config = configBuilder.getOrCreateCategory(text("config"));

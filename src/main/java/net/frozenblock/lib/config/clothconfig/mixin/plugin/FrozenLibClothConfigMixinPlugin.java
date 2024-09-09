@@ -17,8 +17,7 @@
 
 package net.frozenblock.lib.config.clothconfig.mixin.plugin;
 
-
-import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.LoadingModList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.objectweb.asm.tree.ClassNode;
@@ -31,9 +30,7 @@ import java.util.Set;
 public class FrozenLibClothConfigMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
-	public void onLoad(String mixinPackage) {
-
-	}
+	public void onLoad(String mixinPackage) {}
 
 	@Override
 	@Nullable
@@ -43,8 +40,8 @@ public class FrozenLibClothConfigMixinPlugin implements IMixinConfigPlugin {
 
 	@Override
 	public boolean shouldApplyMixin(String targetClassName, @NotNull String mixinClassName) {
-		if(ModList.get() == null) return false;
-		return ModList.get().isLoaded("cloth-config");
+		if(LoadingModList.get() == null) return false;
+		return LoadingModList.get().getModFileById("cloth_config") != null;
 	}
 
 	@Override
@@ -59,12 +56,8 @@ public class FrozenLibClothConfigMixinPlugin implements IMixinConfigPlugin {
 	}
 
 	@Override
-	public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
-	}
+	public void preApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 
 	@Override
-	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
-
-	}
+	public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {}
 }

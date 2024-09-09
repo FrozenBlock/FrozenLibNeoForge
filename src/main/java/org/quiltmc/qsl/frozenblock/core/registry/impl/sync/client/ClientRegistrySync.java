@@ -25,8 +25,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.PlainTextContents;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.api.distmarker.OnlyIn;
+import net.minecraft.server.level.ServerPlayer;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import net.neoforged.neoforge.network.registration.PayloadRegistrar;
 import org.jetbrains.annotations.ApiStatus;
 import org.quiltmc.qsl.frozenblock.core.registry.api.sync.ModProtocol;
 import org.quiltmc.qsl.frozenblock.core.registry.api.sync.ModProtocolDef;
@@ -41,7 +43,6 @@ import java.util.ArrayList;
 
 
 @ApiStatus.Internal
-@OnlyIn(Dist.CLIENT)
 public final class ClientRegistrySync {
 	private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -61,16 +62,15 @@ public final class ClientRegistrySync {
 	private static LogBuilder builder = new LogBuilder();
 	private static boolean mustDisconnect;
 
-	public static void registerHandlers() {
-		/*
-		ClientConfigurationNetworking.registerGlobalReceiver(ServerPackets.Handshake.PACKET_TYPE, ClientRegistrySync::handleHelloPacket);
-		ClientConfigurationNetworking.registerGlobalReceiver(ServerPackets.End.PACKET_TYPE, ClientRegistrySync::handleEndPacket);
-		ClientConfigurationNetworking.registerGlobalReceiver(ServerPackets.ErrorStyle.PACKET_TYPE, ClientRegistrySync::handleErrorStylePacket);
-		ClientConfigurationNetworking.registerGlobalReceiver(ServerPackets.ModProtocol.PACKET_TYPE, ClientRegistrySync::handleModProtocol);*/
-		//TODO: Useless?
+	public static void registerHandlers(PayloadRegistrar registry) {
+		registry.playToClient(ServerPackets.Handshake.PACKET_TYPE, ServerPackets.Handshake.CODEC, ClientRegistrySync::handleHelloPacket);
+		registry.playToClient(ServerPackets.End.PACKET_TYPE, ServerPackets.End.CODEC, ClientRegistrySync::handleEndPacket);
+		registry.playToClient(ServerPackets.ErrorStyle.PACKET_TYPE, ServerPackets.ErrorStyle.CODEC, ClientRegistrySync::handleErrorStylePacket);
+		registry.playToClient(ServerPackets.ModProtocol.PACKET_TYPE, ServerPackets.ModProtocol.CODEC, ClientRegistrySync::handleModProtocol);
+
 	}
 
-	/*private static void handleModProtocol(ServerPackets.ModProtocol modProtocol, Context ctx) {
+	private static void handleModProtocol(ServerPackets.ModProtocol modProtocol, IPayloadContext ctx) {
 		var prioritizedId = modProtocol.prioritizedId();
 		var protocols = modProtocol.protocols();
 
@@ -81,7 +81,7 @@ public final class ClientRegistrySync {
 		boolean disconnect = false;
 
 		for (var protocol : protocols) {
-			var local = ModProtocol.getVersion(protocol.id());
+			var local = ModProtocol.prioritizedEntry.versions(); //TODO: Might be correct, might not
 			var latest = protocol.latestMatchingVersion(local);
 			LOGGER.info(String.valueOf(latest));
 			if (latest != ProtocolVersions.NO_PROTOCOL) {
@@ -104,11 +104,11 @@ public final class ClientRegistrySync {
 				builder.textEntry(Component.literal(entry.displayName()).append(Component.literal(" (" + entry.id() + ")").withStyle(ChatFormatting.DARK_GRAY)).append(" | Server: ").append(stringifyVersions(entry.versions())).append(", Client: ").append(stringifyVersions(ModProtocol.getVersion(entry.id()))));
 			}
 		} else {
-			sendSupportedModProtocol(ctx.responseSender(), values);
+			sendSupportedModProtocol((ServerPlayer) ctx.player(), values);
 		}
 	}
 
-	private static void handleEndPacket(ServerPackets.End end, Context ctx) {
+	private static void handleEndPacket(ServerPackets.End end, IPayloadContext ctx) {
 		syncVersion = -1;
 
 		if (mustDisconnect) {
@@ -125,13 +125,13 @@ public final class ClientRegistrySync {
 				entry.append(errorStyleFooter);
 			}
 
-			ctx.responseSender().disconnect(entry);
+			((ServerPlayer)ctx.player()).connection.disconnect(entry);
 
 			LOGGER.warn(builder.asString());
 		} else {
-			ctx.responseSender().sendPacket(new ClientPackets.End());
+			((ServerPlayer)ctx.player()).connection.send(new ClientPackets.End());
 		}
-	}*/
+	}
 
 	private static String stringifyVersions(IntList versions) {
 		if (versions == null || versions.isEmpty()) {
@@ -153,22 +153,21 @@ public final class ClientRegistrySync {
 		return b.append(']').toString();
 	}
 
-	/*private static void sendSupportedModProtocol(PacketSender sender, Object2IntOpenHashMap<String> values) {
-		sender.sendPacket(new ClientPackets.ModProtocol(values));
+	private static void sendSupportedModProtocol(ServerPlayer player, Object2IntOpenHashMap<String> values) {
+		PacketDistributor.sendToPlayer(player, new ClientPackets.ModProtocol(values));
 	}
 
-	private static void handleErrorStylePacket(ServerPackets.ErrorStyle errorStyle, Context ctx) {
+	private static void handleErrorStylePacket(ServerPackets.ErrorStyle errorStyle, IPayloadContext ctx) {
 		errorStyleHeader = errorStyle.errorHeader();
 		errorStyleFooter = errorStyle.errorFooter();
 		showErrorDetails = errorStyle.showError();
 	}
 
-	private static void handleHelloPacket(ServerPackets.Handshake handshake, Context ctx) {
+	private static void handleHelloPacket(ServerPackets.Handshake handshake, IPayloadContext ctx) {
 		syncVersion = ProtocolVersions.getHighestSupportedLocal(handshake.supportedVersions());
-
-		ctx.responseSender().sendPacket(new ClientPackets.Handshake(syncVersion));
+		PacketDistributor.sendToPlayer((ServerPlayer) ctx.player(), new ClientPackets.Handshake(syncVersion));
 		builder.clear();
-	}*/
+	}
 
 	private static void markDisconnected(Component reason) {
 		if (disconnectMainReason == null) {

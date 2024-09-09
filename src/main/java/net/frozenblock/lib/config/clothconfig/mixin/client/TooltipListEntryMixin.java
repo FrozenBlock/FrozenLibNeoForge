@@ -28,6 +28,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
@@ -37,6 +38,7 @@ import java.util.stream.Stream;
 
 @OnlyIn(Dist.CLIENT)
 @Mixin(TooltipListEntry.class)
+@Debug(export = true)
 public class TooltipListEntryMixin {
 
 	@ModifyReturnValue(method = "getTooltip()Ljava/util/Optional;", at = @At("RETURN"), remap = false)

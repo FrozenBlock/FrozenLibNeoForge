@@ -18,15 +18,17 @@
 
 package org.quiltmc.qsl.frozenblock.core.registry.api.sync;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.mojang.logging.LogUtils;
+import it.unimi.dsi.fastutil.ints.IntList;
+import net.neoforged.bus.api.Event;
+import net.neoforged.fml.ModList;
 import net.neoforged.neoforge.common.NeoForge;
-import org.quiltmc.qsl.frozenblock.core.registry.api.event.ModProtocolEvent;
 import org.slf4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ModProtocol {
 	public static boolean enabled = false;
@@ -39,103 +41,55 @@ public class ModProtocol {
 	public static final List<ModProtocolDef> REQUIRED = new ArrayList<>();
 	public static final List<ModProtocolDef> ALL = new ArrayList<>();
 
-	//@SuppressWarnings("ConstantConditions")
+	@SuppressWarnings("ConstantConditions")
 	public static void loadVersions() {
-		NeoForge.EVENT_BUS.post(new ModProtocolEvent.Load());
+		NeoForge.EVENT_BUS.post(new LoadModProtocolEvent());
+		for(var modInfo : ModList.get().getMods()) {
+			String id = modInfo.getModId();
+			try {
 
-		/*for (IModInfo info : ModList.get().getMods()) {
-			ModContainer container = ModList.get(2).getModContainerById(info.getModId()).get();
-			var data = info.;
-			var frozenRegistry = data.getCustomValue("frozenlib_registry");
-
-			if (frozenRegistry == null) {
-				continue;
-			}
-
-			if (frozenRegistry.getType() != CustomValue.CvType.OBJECT) {
-				LOGGER.warn("Mod {} ({}) contains invalid 'frozenlib_registry' entry! Expected 'OBJECT', found '{}'", container.getMetadata().getName(), container.getMetadata().getId(), frozenRegistry.getType());
-				continue;
-			}
-
-			var value = frozenRegistry.getAsObject().get("mod_protocol");
-
-			if (value == null || value.getType() == CustomValue.CvType.NULL) {
-				continue;
-			}
-
-			if (value.getType() == CustomValue.CvType.OBJECT) {
-				var object = value.getAsObject();
-
-				var optional = false;
-				var optVal = object.get("optional");
-
-				if (optVal != null) {
-					if (optVal.getType() != CustomValue.CvType.BOOLEAN) {
-						invalidEntryType(".optional", container, CustomValue.CvType.BOOLEAN, optVal.getType());
-						continue;
+				var entry = ENTRIES.get(id);
+				if (entry == null)
+					continue;
+				var object = entry.get("mod_protocol");
+				final IntList version = IntList.of();
+				boolean optional = false;
+				if (object.isJsonArray()) {
+					for (var in : object.getAsJsonArray()) {
+						version.add(in.getAsInt());
 					}
-
-					optional = optVal.getAsBoolean();
-				}
-
-				var version = decodeVersion(".value", container, object.get("value"));
-
-				if (version != null) {
-					add(new ModProtocolDef("mod:" + data.getId(), data.getName(), version, optional));
-				}
-			} else {
-				var version = decodeVersion("", container, value);
-				if (version != null) {
-					add(new ModProtocolDef("mod:" + data.getId(), data.getName(), version, false));
-				}
-			}
-		}*/
-	}
-
-	/*private static IntList decodeVersion(String path, ModContainer container, CustomValue value) {
-		if (value == null) {
-			invalidEntryType(path, container, CustomValue.CvType.NUMBER, CustomValue.CvType.NULL);
-			return null;
-		} else if (value.getType() == CustomValue.CvType.NUMBER) {
-			var i = value.getAsNumber().intValue();
-			if (i < 0) {
-				negativeEntry(path, container, i);
-				return null;
-			}
-
-			return IntList.of(i);
-		} else if (value.getType() == CustomValue.CvType.ARRAY) {
-			var array = value.getAsArray();
-			var versions = new IntArrayList(array.size());
-			for (var i = 0; i < array.size(); i++) {
-				var entry = array.get(i);
-				if (entry.getType() == CustomValue.CvType.NUMBER) {
-					var version = entry.getAsNumber().intValue();
-					if (version < 0) {
-						negativeEntry(path + "[" + i + "]", container, version);
-						return null;
-					}
-
-					versions.add(version);
 				} else {
-					invalidEntryType(path + "[" + i + "]", container, CustomValue.CvType.NUMBER, entry.getType());
-					return null;
+					try {
+						int versionN = object.getAsInt();
+						if (versionN < 0) negativeEntry(id, modInfo.getDisplayName(), versionN);
+						version.add(versionN);
+					} catch (NumberFormatException exception) {
+						final JsonElement o = object.getAsJsonObject().get("value");
+						if(o.isJsonArray()) {
+							for(var in : o.getAsJsonArray()) {
+								version.add(in.getAsInt());
+							}
+						} else {
+							version.add(o.getAsInt());
+						}
+						optional = object.getAsJsonObject().get("optional").getAsBoolean();
+					}
 				}
+				add(new ModProtocolDef(id, modInfo.getDisplayName(), version, optional));
+			} catch (Exception e) {
+				invalidEntryType(id, modInfo.getDisplayName());
+				LOGGER.warn(Arrays.toString(e.getStackTrace()));
 			}
 
-			return versions;
-		} else {
-			invalidEntryType(path + ".optional", container, CustomValue.CvType.NUMBER, value.getType());
-			return null;
 		}
 	}
 
-	private static void invalidEntryType(String path, ModContainer c, Cu	stomValue.CvType expected, CustomValue.CvType found) {
-		LOGGER.warn("Mod {} ({}) contains invalid 'frozenlib_registry.mod_protocol{}' entry! Expected '{}', found '{}'", path, c.getMetadata().getName(), c.getMetadata().getId(), expected.name(), found.name());
+	private static void invalidEntryType(String path, String displayName) {
+		LOGGER.warn("Mod {} ({}) contains invalid FrozenLibRegistry-ModProtocol entry!", path, displayName);
 	}
 
-	private static void negativeEntry(String path, ModContainer c, int i) {
-		LOGGER.warn("Mod {} ({}) contains invalid 'frozenlib_registry.mod_protocol{}' entry! Protocol requires non-negative integer, found '{}'!", path, c.getMetadata().getName(), c.getMetadata().getId(), i);
+	private static void negativeEntry(String path, String displayName, int i) {
+		LOGGER.warn("Mod {} ({}) contains invalid FrozenLibRegistry-ModProtocol entry! Protocol version must be positive or 0 (found {})", path, displayName, i);
 	}
 
 	public static IntList getVersion(String string) {
@@ -154,8 +108,48 @@ public class ModProtocol {
 		enabled = true;
 	}
 
-	@FunctionalInterface
-	public interface LoadModProtocol extends CommonEventEntrypoint {
-		void load();
-	}*/
+	private static HashMap<String, ModProtocolEntry> ENTRIES = new HashMap<>();
+
+	public static class LoadModProtocolEvent extends Event {
+		public void register(String modId, ModProtocolEntry entry) throws IllegalAccessException {
+			if(ENTRIES.containsKey(modId)) throw new IllegalAccessException("Unable to register two entries under the same id (" + modId + ")");
+			ENTRIES.put(modId, entry);
+		}
+
+	}
+
+	public static class ModProtocolEntry {
+		private final JsonObject object = new JsonObject();
+
+		public ModProtocolEntry(final int version) {
+			object.addProperty("mod_protocol", version);
+		}
+
+		public ModProtocolEntry(final IntList versions) {
+			final JsonArray array = new JsonArray();
+			versions.forEach(array::add);
+			object.add("mod_protocol", array);
+		}
+
+		public ModProtocolEntry(final int version, boolean optional) {
+			final JsonObject obj = new JsonObject();
+			obj.addProperty("value", version);
+			obj.addProperty("optional", optional);
+			object.add("mod_protocol", obj);
+		}
+
+		public ModProtocolEntry(final IntList versions, boolean optional) {
+			final JsonArray array = new JsonArray();
+			versions.forEach(array::add);
+			final JsonObject obj = new JsonObject();
+			obj.add("value", array);
+			obj.addProperty("optional", optional);
+			object.add("mod_protocol", obj);
+		}
+
+		public JsonElement get(String value) {
+			return object.get(value);
+		}
+	}
+
 }

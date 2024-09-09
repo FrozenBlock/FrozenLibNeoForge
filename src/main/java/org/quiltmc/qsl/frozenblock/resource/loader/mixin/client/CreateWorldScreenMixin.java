@@ -31,6 +31,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import net.neoforged.neoforge.common.NeoForge;
 import org.quiltmc.qsl.frozenblock.resource.loader.api.ResourceLoaderEvent;
+import org.spongepowered.asm.mixin.Debug;
 import org.spongepowered.asm.mixin.Dynamic;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
