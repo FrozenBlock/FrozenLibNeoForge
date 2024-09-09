@@ -1,5 +1,6 @@
 package net.frozenblock.lib.networking;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,6 +17,14 @@ public class PlayerLookup {
     }
 
     public static Collection<ServerPlayer> tracking(BlockEntity blockEntity) {
-        return ((ServerLevel) Objects.requireNonNull(blockEntity.getLevel())).getChunkSource().chunkMap.getPlayers(new ChunkPos(blockEntity.getBlockPos()), false);
+        return tracking((ServerLevel) blockEntity.getLevel(), blockEntity.getBlockPos());
+    }
+
+    public static Collection<ServerPlayer> tracking(ServerLevel level, ChunkPos pos) {
+        return Objects.requireNonNull(level).getChunkSource().chunkMap.getPlayers(pos, false);
+    }
+
+    public static Collection<ServerPlayer> tracking(ServerLevel level, BlockPos pos) {
+        return tracking(level, new ChunkPos(pos));
     }
 }
