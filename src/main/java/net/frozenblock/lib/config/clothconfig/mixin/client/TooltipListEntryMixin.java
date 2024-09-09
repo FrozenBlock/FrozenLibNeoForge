@@ -38,7 +38,6 @@ import java.util.stream.Stream;
 
 @OnlyIn(Dist.CLIENT)
 @Mixin(TooltipListEntry.class)
-@Debug(export = true)
 public class TooltipListEntryMixin {
 
 	@ModifyReturnValue(method = "getTooltip()Ljava/util/Optional;", at = @At("RETURN"), remap = false)

@@ -29,7 +29,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @OnlyIn(Dist.CLIENT)
 @Mixin(AbstractConfigEntry.class)
-@Debug(export = true)
 public class AbstractConfigEntryMixin {
 
 	@Inject(method = "save", at = @At("HEAD"), cancellable = true, remap = false)
