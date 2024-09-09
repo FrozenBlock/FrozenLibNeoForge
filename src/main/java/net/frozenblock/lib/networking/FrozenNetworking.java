@@ -1,6 +1,11 @@
 package net.frozenblock.lib.networking;
 
 import net.frozenblock.lib.config.impl.network.ConfigSyncPacket;
+import net.frozenblock.lib.debug.client.impl.DebugRenderManager;
+import net.frozenblock.lib.debug.networking.GoalDebugRemovePayload;
+import net.frozenblock.lib.debug.networking.ImprovedGameEventDebugPayload;
+import net.frozenblock.lib.debug.networking.ImprovedGameEventListenerDebugPayload;
+import net.frozenblock.lib.debug.networking.ImprovedGoalDebugPayload;
 import net.frozenblock.lib.item.impl.CooldownInterface;
 import net.frozenblock.lib.item.impl.network.CooldownChangePacket;
 import net.frozenblock.lib.item.impl.network.CooldownTickCountPacket;
@@ -24,6 +29,7 @@ import net.frozenblock.lib.spotting_icons.impl.SpottingIconRemovePacket;
 import net.frozenblock.lib.wind.api.ClientWindManager;
 import net.frozenblock.lib.wind.api.WindDisturbance;
 import net.frozenblock.lib.wind.api.WindDisturbanceLogic;
+import net.frozenblock.lib.wind.impl.networking.WindAccessPacket;
 import net.frozenblock.lib.wind.impl.networking.WindDisturbancePacket;
 import net.frozenblock.lib.wind.impl.networking.WindSyncPacket;
 import net.minecraft.client.Minecraft;
@@ -231,6 +237,38 @@ public final class FrozenNetworking {
             }
         });
         //C2S
+
+        registry.playToClient(ImprovedGoalDebugPayload.PACKET_TYPE, ImprovedGoalDebugPayload.STREAM_CODEC, (packet, ctx) -> {
+            Entity entity = Minecraft.getInstance().level.getEntity(packet.entityId());
+            if(entity != null) {
+                net.frozenblock.lib.debug.client.impl.DebugRenderManager.improvedGoalSelectorRenderer.addGoalSelector(
+                        entity,
+                        packet.goals()
+                );
+            }
+        });
+
+        registry.playToClient(GoalDebugRemovePayload.PACKET_TYPE, GoalDebugRemovePayload.STREAM_CODEC, (packet, ctx) -> {
+            net.frozenblock.lib.debug.client.impl.DebugRenderManager.improvedGoalSelectorRenderer.removeGoalSelector(packet.entityId());
+        });
+
+        registry.playToClient(ImprovedGameEventListenerDebugPayload.PACKET_TYPE, ImprovedGameEventListenerDebugPayload.STREAM_CODEC, (packet, ctx) -> {
+            net.frozenblock.lib.debug.client.impl.DebugRenderManager.improvedGameEventRenderer.trackListener(
+                    packet.listenerPos(),
+                    packet.listenerRange()
+            );
+        });
+
+        registry.playToClient(ImprovedGameEventDebugPayload.PACKET_TYPE, ImprovedGameEventDebugPayload.STREAM_CODEC, (packet, ctx) -> {
+            net.frozenblock.lib.debug.client.impl.DebugRenderManager.improvedGameEventRenderer.trackGameEvent(
+                    packet.gameEventType(),
+                    packet.pos()
+            );
+        });
+
+        registry.playToClient(WindAccessPacket.PACKET_TYPE, WindAccessPacket.STREAM_CODEC, (packet, ctx) -> {
+           ClientWindManager.addAccessedPosition(packet.accessPos());
+        });
     }
 
     public static boolean isLocalPlayer(Player player) {

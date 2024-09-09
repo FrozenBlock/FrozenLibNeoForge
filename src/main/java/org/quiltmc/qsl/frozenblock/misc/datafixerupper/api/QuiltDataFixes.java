@@ -92,14 +92,14 @@ public class QuiltDataFixes {
      * @param currentVersion the current version of the mod's data
      * @param dataFixer      the data fixer
      */
-    /*public static void registerFixer(
+    public static void registerFixer(
 		@NotNull ModContainer mod,
 		@Range(from = 0, to = Integer.MAX_VALUE) int currentVersion,
 		@NotNull DataFixer dataFixer
 	) {
         requireNonNull(mod, "mod cannot be null");
 
-        registerFixer(mod.getMetadata().getId(), currentVersion, dataFixer);
+        registerFixer(mod.getModId(), currentVersion, dataFixer);
     }
 
     /**
@@ -108,14 +108,14 @@ public class QuiltDataFixes {
      * @param mod              the mod container
      * @param dataFixerBuilder the data fixer builder
      */
-    /*public static void buildAndRegisterFixer(
+    public static void buildAndRegisterFixer(
 		@NotNull ModContainer mod,
 		@NotNull QuiltDataFixerBuilder dataFixerBuilder
 	) {
         requireNonNull(mod, "mod cannot be null");
         requireNonNull(dataFixerBuilder, "data fixer builder cannot be null");
 
-        registerFixer(mod.getMetadata().getId(), dataFixerBuilder.getDataVersion(), buildFixer(dataFixerBuilder));
+        registerFixer(mod.getModId(), dataFixerBuilder.getDataVersion(), buildFixer(dataFixerBuilder));
     }
 
 	/**
@@ -125,7 +125,7 @@ public class QuiltDataFixes {
 	 * @param currentVersion the current version of the mod's data
 	 * @param dataFixer      the data fixer
 	 */
-	/*public static void registerMinecraftFixer(
+	public static void registerMinecraftFixer(
 		@NotNull String modId,
 		@Range(from = 0, to = Integer.MAX_VALUE) int currentVersion,
 		@NotNull DataFixer dataFixer
@@ -149,14 +149,14 @@ public class QuiltDataFixes {
 	 * @param currentVersion the current version of the mod's data
 	 * @param dataFixer      the data fixer
 	 */
-	/*public static void registerMinecraftFixer(
+	public static void registerMinecraftFixer(
 		@NotNull ModContainer mod,
 		@Range(from = 0, to = Integer.MAX_VALUE) int currentVersion,
 		@NotNull DataFixer dataFixer
 	) {
 		requireNonNull(mod, "mod cannot be null");
 
-		registerMinecraftFixer(mod.getMetadata().getId(), currentVersion, dataFixer);
+		registerMinecraftFixer(mod.getModId(), currentVersion, dataFixer);
 	}
 
 	/**
@@ -165,15 +165,15 @@ public class QuiltDataFixes {
 	 * @param mod              the mod container
 	 * @param dataFixerBuilder the data fixer builder
 	 */
-	/*public static void buildAndRegisterMinecraftFixer(
+	public static void buildAndRegisterMinecraftFixer(
 		@NotNull ModContainer mod,
 		@NotNull QuiltDataFixerBuilder dataFixerBuilder
 	) {
 		requireNonNull(mod, "mod cannot be null");
 		requireNonNull(dataFixerBuilder, "data fixer builder cannot be null");
 
-		registerMinecraftFixer(mod.getMetadata().getId(), dataFixerBuilder.getDataVersion(), buildFixer(dataFixerBuilder));
-	}*/
+		registerMinecraftFixer(mod.getModId(), dataFixerBuilder.getDataVersion(), buildFixer(dataFixerBuilder));
+	}
 
 	/**
 	 * Builds a new data fixer.

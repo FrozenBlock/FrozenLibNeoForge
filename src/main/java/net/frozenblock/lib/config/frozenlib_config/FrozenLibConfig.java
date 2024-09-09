@@ -26,6 +26,7 @@ import net.frozenblock.lib.config.api.instance.json.JsonType;
 import net.frozenblock.lib.config.api.registry.ConfigRegistry;
 import net.frozenblock.lib.config.api.sync.SyncBehavior;
 import net.frozenblock.lib.config.api.sync.annotation.EntrySyncData;
+import net.frozenblock.lib.entrypoint.api.DevelopmentCheck;
 import org.quiltmc.qsl.frozenblock.misc.datafixerupper.api.QuiltDataFixerBuilder;
 import org.quiltmc.qsl.frozenblock.misc.datafixerupper.api.QuiltDataFixes;
 
@@ -34,31 +35,36 @@ import java.util.List;
 public class FrozenLibConfig {
 
 	public static final Config<FrozenLibConfig> INSTANCE = ConfigRegistry.register(
-		new JsonConfig<>(
-			FrozenSharedConstants.MOD_ID,
-			FrozenLibConfig.class,
-			JsonType.JSON5_UNQUOTED_KEYS,
-			true,
-			QuiltDataFixes.buildFixer(new QuiltDataFixerBuilder(0)),
-			0
-		) {
-			@Override
-			public void onSave() throws Exception {
-				super.onSave();
-				this.onSync(null);
-			}
+			new JsonConfig<>(
+					FrozenSharedConstants.MOD_ID,
+					FrozenLibConfig.class,
+					JsonType.JSON5_UNQUOTED_KEYS,
+					true,
+					QuiltDataFixes.buildFixer(new QuiltDataFixerBuilder(0)),
+					0
+			) {
+				@Override
+				public void onSave() throws Exception {
+					super.onSave();
+					this.onSync(null);
+				}
 
-			@Override
-			public void onSync(FrozenLibConfig syncInstance) {
-				var config = this.config();
-				USE_WIND_ON_NON_FROZEN_SERVERS = config.useWindOnNonFrozenServers;
+				@Override
+				public void onSync(FrozenLibConfig syncInstance) {
+					var config = this.config();
+					USE_WIND_ON_NON_FROZEN_SERVERS = config.useWindOnNonFrozenServers;
+					IS_DEBUG = config.isDebug && DevelopmentCheck.isDevelopment();
+				}
 			}
-		}
 	);
 
 	public static volatile boolean USE_WIND_ON_NON_FROZEN_SERVERS = true;
+	public static volatile boolean IS_DEBUG = false;
 
 	@Comment("Mods may override any of these options, but the config file will not change.")
+
+	@EntrySyncData("isDebug")
+	public boolean isDebug = false;
 
 	@EntrySyncData(value = "useWindOnNonFrozenServers", behavior = SyncBehavior.UNSYNCABLE)
 	public boolean useWindOnNonFrozenServers = true;
@@ -80,7 +86,7 @@ public class FrozenLibConfig {
 		@Comment("Mods can only add to this list. User settings will always apply.")
 		@EntrySyncData("disabledDataFixTypes")
 		public List<String> disabledDataFixTypes = List.of(
-			"world_gen_settings"
+				"world_gen_settings"
 		);
 	}
 

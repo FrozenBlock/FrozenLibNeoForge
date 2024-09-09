@@ -17,6 +17,7 @@
 
 package net.frozenblock.lib.wind.api;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.datafixers.util.Pair;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.frozenblock.lib.config.frozenlib_config.FrozenLibConfig;
@@ -26,6 +27,7 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
+import net.minecraft.util.VisibleForDebug;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.levelgen.synth.ImprovedNoise;
@@ -34,6 +36,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -202,10 +205,30 @@ public final class ClientWindManager {
 		double newWindX = Mth.lerp(disturbanceAmount, windX * windScale, windDisturbance.x * windDisturbanceScale) * scale;
 		double newWindY = Mth.lerp(disturbanceAmount, windY * windScale, windDisturbance.y * windDisturbanceScale) * scale;
 		double newWindZ = Mth.lerp(disturbanceAmount, windZ * windScale, windDisturbance.z * windDisturbanceScale) * scale;
+
+		if (FrozenLibConfig.IS_DEBUG) {
+			addAccessedPosition(pos);
+		}
+
 		return new Vec3(
-			Mth.clamp(newWindX, -clamp, clamp),
-			Mth.clamp(newWindY, -clamp, clamp),
-			Mth.clamp(newWindZ, -clamp, clamp)
+				Mth.clamp(newWindX, -clamp, clamp),
+				Mth.clamp(newWindY, -clamp, clamp),
+				Mth.clamp(newWindZ, -clamp, clamp)
+		);
+	}
+
+	@NotNull
+	public static Vec3 getRawDisturbanceMovement(@NotNull Level level, @NotNull Vec3 pos) {
+		Pair<Double, Vec3> disturbance = WindManager.calculateWindDisturbance(getWindDisturbances(), level, pos);
+		double disturbanceAmount = disturbance.getFirst();
+		Vec3 windDisturbance = disturbance.getSecond();
+		double newWindX = Mth.lerp(disturbanceAmount, 0D, windDisturbance.x);
+		double newWindY = Mth.lerp(disturbanceAmount, 0D, windDisturbance.y);
+		double newWindZ = Mth.lerp(disturbanceAmount, 0D, windDisturbance.z);
+		return new Vec3(
+				newWindX,
+				newWindY,
+				newWindZ
 		);
 	}
 
@@ -238,8 +261,8 @@ public final class ClientWindManager {
 	public static Vec3 getWindMovement3D(@NotNull Vec3 pos, double scale, double clamp, double stretch) {
 		Vec3 wind = sample3D(pos, stretch);
 		return new Vec3(Mth.clamp((wind.x()) * scale, -clamp, clamp),
-			Mth.clamp((wind.y()) * scale, -clamp, clamp),
-			Mth.clamp((wind.z()) * scale, -clamp, clamp));
+				Mth.clamp((wind.y()) * scale, -clamp, clamp),
+				Mth.clamp((wind.z()) * scale, -clamp, clamp));
 	}
 
 	@NotNull
@@ -265,5 +288,22 @@ public final class ClientWindManager {
 		double windY = noise.noise(0D, (xyz + sampledTime) * stretch, 0D);
 		double windZ = noise.noise(0D, 0D, (xyz + sampledTime) * stretch);
 		return new Vec3(windX, windY, windZ);
+	}
+
+	private static final List<Vec3> ACCESSED_POSITIONS = new ArrayList<>();
+
+	@VisibleForDebug
+	public static void addAccessedPosition(Vec3 vec3) {
+		ACCESSED_POSITIONS.add(vec3);
+	}
+
+	@VisibleForDebug
+	public static @NotNull @Unmodifiable List<Vec3> getAccessedPositions() {
+		return ImmutableList.copyOf(ACCESSED_POSITIONS);
+	}
+
+	@VisibleForDebug
+	public static void clearAccessedPositions() {
+		ACCESSED_POSITIONS.clear();
 	}
 }

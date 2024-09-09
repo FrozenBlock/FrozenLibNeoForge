@@ -67,7 +67,8 @@ config="mixin/${mod_id}_quiltmc_datafixerupper.mixins.json"
 config="mixin/${mod_id}_quiltmc_registry.mixins.json"
 [[mixins]]
 config="mixin/${mod_id}_quiltmc_resource_loader.mixins.json"
-
+[[mixins]]
+config="mixin/${mod_id}.debug.mixins.json"
 # The [[accessTransformers]] block allows you to declare where your AT file is.
 # If this block is omitted, a fallback attempt will be made to load an AT from META-INF/accesstransformer.cfg
 [[accessTransformers]]
