@@ -7,6 +7,7 @@ import net.frozenblock.lib.entrypoint.api.FrozenMainEntrypoint;
 import net.frozenblock.lib.entrypoint.api.FrozenModInitializer;
 import net.frozenblock.lib.gravity.api.GravityAPI;
 import net.frozenblock.lib.ingamedevtools.RegisterInGameDevTools;
+import net.frozenblock.lib.item.api.FrozenCreativeModeTabs;
 import net.frozenblock.lib.networking.FrozenNetworking;
 import net.frozenblock.lib.particle.api.FrozenParticleTypes;
 import net.frozenblock.lib.registry.api.FrozenRegistry;
@@ -28,6 +29,7 @@ import net.neoforged.fml.ModContainer;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
 import org.quiltmc.qsl.frozenblock.core.registry.api.sync.ModProtocol;
 import org.quiltmc.qsl.frozenblock.core.registry.impl.sync.server.ServerRegistrySync;
@@ -88,5 +90,10 @@ public class FrozenMain extends FrozenModInitializer {
                     new TagKeyArgument.Info<>()
             );
         });
+    }
+
+    @SubscribeEvent
+    public void registerTabs(BuildCreativeModeTabContentsEvent event) {
+        FrozenCreativeModeTabs.build(event);
     }
 }

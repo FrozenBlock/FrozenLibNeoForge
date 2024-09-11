@@ -13,6 +13,7 @@
     "LivingEntityMixin",
     "ServerItemCooldownsMixin",
     "ServerPlayerMixin",
+    "axe.AxeItemAccessor",
     "axe.AxeItemMixin",
     "bonemeal.BoneMealItemMixin",
     "shovel.ShovelItemMixin"

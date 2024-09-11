@@ -8,6 +8,8 @@
   },
   "mixins": [
     "dripstone.PointedDripstoneBlockMixin",
+    "fire.FireBlockMixin",
+    "fuel.AbstractFurnaceBlockEntityMixin",
     "tick.BlockBehaviourMixin"
   ],
   "client": [
